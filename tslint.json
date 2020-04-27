@@ -1,0 +1,24 @@
+{
+    "defaultSeverity": "warning",
+    "extends": ["tslint:latest", "tslint-config-prettier"],
+    "jsRules": {},
+    "rules": {
+        "deprecation": true,
+        "interface-name": [true, "always-prefix"],
+        "max-classes-per-file": false,
+        "member-ordering": [
+            true,
+            { "alphabetize": true, "order": "fields-first" }
+        ],
+        "no-console": false,
+        "no-empty": false,
+        "no-empty-interface": false,
+        "no-object-literal-type-assertion": false,
+        "no-unused-expression": [true, "allow-fast-null-checks"],
+        "quotemark": [true, "double", "jsx-double"],
+        "variable-name": {
+            "options": ["allow-leading-underscore", "allow-pascal-case"]
+        }
+    },
+    "rulesDirectory": []
+}
