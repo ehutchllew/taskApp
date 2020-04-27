@@ -1,8 +1,14 @@
-export interface ITaskField {
+import { ObjectId } from "mongodb";
+
+interface IBaseField {
+    _id: string | number | ObjectId;
+}
+
+export interface ITaskField extends IBaseField {
     complete: boolean;
     description: string;
 }
-export interface IUserField {
+export interface IUserField extends IBaseField {
     age: number;
     name: string;
 }

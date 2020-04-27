@@ -15,6 +15,13 @@
         "no-empty-interface": false,
         "no-object-literal-type-assertion": false,
         "no-unused-expression": [true, "allow-fast-null-checks"],
+        "ordered-imports": [
+            true,
+            {
+                "import-sources-order": "case-insensitive",
+                "named-imports-order": "case-insensitive"
+            }
+        ],
         "quotemark": [true, "double", "jsx-double"],
         "variable-name": {
             "options": ["allow-leading-underscore", "allow-pascal-case"]

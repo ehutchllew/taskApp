@@ -7,7 +7,9 @@
     "license": "MIT",
     "scripts": {
         "build": "yarn tsc",
-        "tc": "tsc --noEmit --skipLibCheck",
+        "lint": "tslint --project .",
+        "lint-fix": "tslint --project . --fix",
+        "tsc": "tsc --noEmit --skipLibCheck",
         "tsn": "yarn ts-node",
         "watch": "nodemon -e ts,hbs -x yarn tsn"
     },
