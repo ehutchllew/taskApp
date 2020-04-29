@@ -55,3 +55,19 @@ db.collection(CollectionTypes.USERS)
     .then((res) => console.log(res))
     .catch((err) => console.log(err));
 ```
+
+### Deleting
+
+Look for the `deleteCount` prop on the response object.
+
+```ts
+const db = new DbCollections(client.db(DATABASE_NAME));
+db.collection(CollectionTypes.USERS)
+    .deleteOne({
+        _id: new ObjectId("5ea752195f575942a4af115e"),
+    })
+    .then((result) => {
+        console.log(result);
+    })
+    .catch((err) => console.log(err));
+```
