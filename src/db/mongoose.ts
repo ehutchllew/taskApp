@@ -1,20 +1,12 @@
-import { connect, model, Schema } from "mongoose";
+import { connect, model } from "mongoose";
+import { UserSchema } from "./schemas";
 
 connect("mongodb://127.0.0.1:27017/task-manager-api", {
     useNewUrlParser: true,
     useCreateIndex: true,
 });
 
-const userSchema = new Schema({
-    age: {
-        type: Number,
-    },
-    name: {
-        type: String,
-    },
-});
-
-const User = model("User", userSchema);
+const User = model("User", UserSchema);
 
 const me = new User({
     age: 29,

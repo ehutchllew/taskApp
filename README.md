@@ -71,3 +71,20 @@ db.collection(CollectionTypes.USERS)
     })
     .catch((err) => console.log(err));
 ```
+
+## Mongoose Examples
+
+### Creating Models
+
+```ts
+const UserSchema = new Schema({
+    age: {
+        type: Number,
+    },
+    name: {
+        type: String,
+    },
+});
+
+const User = model("User", userSchema);
+```
