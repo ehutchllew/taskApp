@@ -1,15 +1,33 @@
 import express, { Application } from "express";
+import { Task, User } from "./db/documents";
 import "./db/mongoose";
-import { model } from "mongoose";
-import { UserSchema, TaskSchema } from "./db/schemas";
 
 const app: Application = express();
 const PORT = process.env.port || 3001;
 
 app.use(express.json());
 
+app.get("/users", (req, res) => {
+    User.find({})
+        .then((resp) => {
+            res.send(resp);
+        })
+        .catch((e) => {
+            res.status(500).send(e);
+        });
+});
+
+app.get("/users/:id", (req, res) => {
+    User.findById(req.params.id)
+        .then((resp) => {
+            res.send(resp);
+        })
+        .catch((e) => {
+            res.status(404).send(e);
+        });
+});
+
 app.post("/users", (req, res) => {
-    const User = model("user", UserSchema);
     const user = new User(req.body);
 
     user.save()
@@ -21,8 +39,27 @@ app.post("/users", (req, res) => {
         });
 });
 
+app.get("/tasks", (req, res) => {
+    Task.find({})
+        .then((resp) => {
+            res.send(resp);
+        })
+        .catch((e) => {
+            res.status(500).send(e);
+        });
+});
+
+app.get("/tasks/:id", (req, res) => {
+    Task.findById(req.params.id)
+        .then((resp) => {
+            res.send(resp);
+        })
+        .catch((e) => {
+            res.status(404).send(e);
+        });
+});
+
 app.post("/tasks", (req, res) => {
-    const Task = model("task", TaskSchema);
     const task = new Task(req.body);
 
     task.save()
