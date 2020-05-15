@@ -14,8 +14,10 @@
         "watch": "nodemon -e ts,hbs -x yarn tsn"
     },
     "dependencies": {
+        "express": "^4.17.1",
         "mongodb": "3.1.10",
-        "mongoose": "^5.9.11"
+        "mongoose": "^5.9.11",
+        "validator": "^13.0.0"
     },
     "devDependencies": {
         "@types/mongodb": "^3.5.14",

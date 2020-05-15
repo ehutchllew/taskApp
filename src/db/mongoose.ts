@@ -6,17 +6,18 @@ connect("mongodb://127.0.0.1:27017/task-manager-api", {
     useCreateIndex: true,
 });
 
-const User = model("User", UserSchema);
+// const User = model("User", UserSchema);
 
-const me = new User({
-    age: 29,
-    name: "Evan",
-});
+// const me = new User({
+//     age: 11,
+//     email: "aasdf@email.com ",
+//     name: "  ABC ",
+// });
 
-me.save()
-    .then((resp) => {
-        console.log(resp);
-    })
-    .catch((error) => {
-        console.log("Error!\n", error);
-    });
+// me.save()
+//     .then((resp) => {
+//         console.log(resp);
+//     })
+//     .catch((error) => {
+//         console.log("Error!\n", error);
+//     });
