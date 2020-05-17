@@ -16,7 +16,7 @@ export function taskRoutes(app: Application) {
 
     app.get("/tasks/:id", async (req, res) => {
         try {
-            const task = Task.findById(req.params.id);
+            const task = await Task.findById(req.params.id);
 
             if (!task) {
                 throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
