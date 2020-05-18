@@ -4,6 +4,21 @@ import { User } from "../db/documents";
 import { IError, SERVICE_ERRORS } from "../types/errors";
 
 export function userRoutes(app: Application) {
+    app.delete("/users/:id", async (req, res) => {
+        try {
+            const user = await User.findByIdAndDelete(req.params.id);
+
+            if (!user) {
+                throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
+            }
+
+            res.send(user);
+        } catch (e) {
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
+    });
+
     app.get("/users", async (req, res) => {
         try {
             const users = await User.find({});

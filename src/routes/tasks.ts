@@ -4,6 +4,21 @@ import { Task } from "../db/documents";
 import { IError, SERVICE_ERRORS } from "../types/errors";
 
 export function taskRoutes(app: Application) {
+    app.delete("/tasks/:id", async (req, res) => {
+        try {
+            const task = await Task.findByIdAndDelete(req.params.id);
+
+            if (!task) {
+                throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
+            }
+
+            res.send(task);
+        } catch (e) {
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
+    });
+
     app.get("/tasks", async (req, res) => {
         try {
             const tasks = await Task.find({});
@@ -17,6 +32,24 @@ export function taskRoutes(app: Application) {
     app.get("/tasks/:id", async (req, res) => {
         try {
             const task = await Task.findById(req.params.id);
+
+            if (!task) {
+                throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
+            }
+
+            res.send(task);
+        } catch (e) {
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
+    });
+
+    app.patch("/tasks/:id", async (req, res) => {
+        try {
+            const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+                new: true,
+                runValidators: true,
+            });
 
             if (!task) {
                 throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
