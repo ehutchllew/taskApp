@@ -18,6 +18,7 @@ export function errorHandler(err: Error): IError {
             errorMap.status = 404;
             break;
         case SERVICE_ERRORS.FAILED_LOGIN:
+        case SERVICE_ERRORS.INVALID_TOKEN:
             errorMap.status = 401;
             break;
         case SERVICE_ERRORS.PARALLEL_SAVE:

@@ -1,10 +1,11 @@
 import { Application } from "express";
 import { errorHandler } from "../common/errorHandler";
 import { User } from "../db/models";
+import { authMiddleware } from "../middleware";
 import { IError, SERVICE_ERRORS } from "../types/errors";
 
 export function userRoutes(app: Application) {
-    app.delete("/users/:id", async (req, res) => {
+    app.delete("/users/:id", authMiddleware, async (req, res) => {
         try {
             const user = await User.findByIdAndDelete(req.params.id);
 
@@ -19,7 +20,7 @@ export function userRoutes(app: Application) {
         }
     });
 
-    app.get("/users", async (req, res) => {
+    app.get("/users", authMiddleware, async (req, res) => {
         try {
             const users = await User.find({});
             res.send(users);
