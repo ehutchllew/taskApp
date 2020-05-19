@@ -3,6 +3,7 @@ import { Document, Schema, Error } from "mongoose";
 import validator from "validator";
 import { IUserField } from "../collections";
 import { User } from "./models";
+import { SERVICE_ERRORS } from "../types/errors";
 
 export type IUserDocument = Document & IUserField;
 
@@ -64,13 +65,13 @@ UserSchema.statics.findByCredentials = async function (email, password) {
     const user = (await User.findOne({ email })) as IUserDocument;
 
     if (!user) {
-        throw new Error("Unable to login");
+        throw { message: "Unable to Login", name: SERVICE_ERRORS.FAILED_LOGIN };
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-        throw new Error("Unable to login");
+        throw { message: "Unable to Login", name: SERVICE_ERRORS.FAILED_LOGIN };
     }
 
     return user;

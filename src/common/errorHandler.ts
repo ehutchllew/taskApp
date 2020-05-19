@@ -17,6 +17,9 @@ export function errorHandler(err: Error): IError {
         case SERVICE_ERRORS.DOCUMENT_NOT_FOUND:
             errorMap.status = 404;
             break;
+        case SERVICE_ERRORS.FAILED_LOGIN:
+            errorMap.status = 401;
+            break;
         case SERVICE_ERRORS.PARALLEL_SAVE:
             errorMap.status = 409;
             break;

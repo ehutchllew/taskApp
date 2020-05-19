@@ -9,6 +9,7 @@ export interface IError {
 export enum SERVICE_ERRORS {
     CAST = "CastError",
     DOCUMENT_NOT_FOUND = "DocumentNotFoundError",
+    FAILED_LOGIN = "FailedLogin",
     PARALLEL_SAVE = "ParallelSaveError",
     VALIDATION = "ValidationError",
 }
