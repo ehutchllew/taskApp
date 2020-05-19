@@ -1,6 +1,6 @@
 import { Application } from "express";
 import { errorHandler } from "../common/errorHandler";
-import { Task } from "../db/documents";
+import { Task } from "../db/models";
 import { IError, SERVICE_ERRORS } from "../types/errors";
 
 export function taskRoutes(app: Application) {

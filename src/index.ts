@@ -1,5 +1,4 @@
 import express, { Application } from "express";
-import { Task, User } from "./db/documents";
 import "./db/mongoose";
 import { configureRoutes } from "./routes";
 

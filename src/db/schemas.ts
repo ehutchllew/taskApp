@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs";
-import { Document, Schema } from "mongoose";
+import { Document, Schema, Error } from "mongoose";
 import validator from "validator";
 import { IUserField } from "../collections";
+import { User } from "./models";
 
-type UserDocument = Document & IUserField;
+export type IUserDocument = Document & IUserField;
 
 const TaskSchema = new Schema({
     completed: {
@@ -32,6 +33,7 @@ const UserSchema = new Schema({
         required: true,
         trim: true,
         type: String,
+        unique: true,
         validate(value) {
             if (!validator.isEmail(value)) {
                 throw new Error("Invalid e-mail");
@@ -58,7 +60,23 @@ const UserSchema = new Schema({
     },
 });
 
-UserSchema.pre<UserDocument>("save", async function (next) {
+UserSchema.statics.findByCredentials = async function (email, password) {
+    const user = (await User.findOne({ email })) as IUserDocument;
+
+    if (!user) {
+        throw new Error("Unable to login");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        throw new Error("Unable to login");
+    }
+
+    return user;
+};
+
+UserSchema.pre<IUserDocument>("save", async function (next) {
     if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 8);
     }

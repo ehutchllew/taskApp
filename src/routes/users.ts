@@ -1,6 +1,6 @@
 import { Application } from "express";
 import { errorHandler } from "../common/errorHandler";
-import { User } from "../db/documents";
+import { User } from "../db/models";
 import { IError, SERVICE_ERRORS } from "../types/errors";
 
 export function userRoutes(app: Application) {
@@ -56,6 +56,20 @@ export function userRoutes(app: Application) {
 
             await user.save();
 
+            res.send(user);
+        } catch (e) {
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
+    });
+
+    app.post("/users/login", async (req, res) => {
+        try {
+            //@ts-ignore
+            const user = await User.findByCredentials(
+                req.body.email,
+                req.body.password
+            );
             res.send(user);
         } catch (e) {
             const err: IError = errorHandler(e);
