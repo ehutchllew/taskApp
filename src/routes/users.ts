@@ -70,7 +70,10 @@ export function userRoutes(app: Application) {
                 req.body.email,
                 req.body.password
             );
-            res.send(user);
+
+            const token = await user.generateAuthToken();
+
+            res.send({ token, user });
         } catch (e) {
             const err: IError = errorHandler(e);
             res.status(err.status).send(err);
@@ -80,8 +83,10 @@ export function userRoutes(app: Application) {
     app.post("/users", async (req, res) => {
         try {
             const user = new User(req.body);
-            await user.save();
-            res.status(201).send(user);
+            // @ts-ignore
+            const token = await user.generateAuthToken();
+
+            res.status(201).send({ token, user });
         } catch (e) {
             const err: IError = errorHandler(e);
             res.status(err.status).send(err);

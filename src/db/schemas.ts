@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { Document, Error, Schema } from "mongoose";
 import validator from "validator";
 import { IUserField } from "../collections";
@@ -59,7 +60,26 @@ const UserSchema = new Schema({
             return true;
         },
     },
+    tokens: [
+        {
+            token: {
+                required: true,
+                type: String,
+            },
+        },
+    ],
 });
+
+UserSchema.methods.generateAuthToken = async function () {
+    const user = this;
+    const token = jwt.sign({ id: user._id.toString() }, "somesecretlel");
+
+    user.tokens = [...user.tokens, { token }];
+
+    await user.save();
+
+    return token;
+};
 
 UserSchema.statics.findByCredentials = async function (email, password) {
     const user = (await User.findOne({ email })) as IUserDocument;
