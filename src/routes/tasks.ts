@@ -46,14 +46,17 @@ export function taskRoutes(app: Application) {
 
     app.patch("/tasks/:id", async (req, res) => {
         try {
-            const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-                new: true,
-                runValidators: true,
-            });
+            const task = await Task.findById(req.params.id);
 
             if (!task) {
                 throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
             }
+
+            Object.entries(req.body).forEach(([key, value]) => {
+                task[key] = value;
+            });
+
+            await task.save();
 
             res.send(task);
         } catch (e) {

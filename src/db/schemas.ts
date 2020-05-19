@@ -1,7 +1,11 @@
-import { Schema } from "mongoose";
+import bcrypt from "bcryptjs";
+import { Document, Schema } from "mongoose";
 import validator from "validator";
+import { IUserField } from "../collections";
 
-export const TaskSchema = new Schema({
+type UserDocument = Document & IUserField;
+
+const TaskSchema = new Schema({
     completed: {
         default: false,
         type: Boolean,
@@ -13,7 +17,7 @@ export const TaskSchema = new Schema({
     },
 });
 
-export const UserSchema = new Schema({
+const UserSchema = new Schema({
     age: {
         type: Number,
         validate(value) {
@@ -53,3 +57,12 @@ export const UserSchema = new Schema({
         },
     },
 });
+
+UserSchema.pre<UserDocument>("save", async function (next) {
+    if (this.isModified("password")) {
+        this.password = await bcrypt.hash(this.password, 8);
+    }
+    next();
+});
+
+export { TaskSchema, UserSchema };

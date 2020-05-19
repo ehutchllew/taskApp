@@ -44,14 +44,17 @@ export function userRoutes(app: Application) {
 
     app.patch("/users/:id", async (req, res) => {
         try {
-            const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-                new: true,
-                runValidators: true,
-            });
+            const user = await User.findById(req.params.id);
 
             if (!user) {
                 throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
             }
+
+            Object.entries(req.body).forEach(([key, value]) => {
+                user[key] = value;
+            });
+
+            await user.save();
 
             res.send(user);
         } catch (e) {
