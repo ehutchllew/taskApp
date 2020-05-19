@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
+import { errorHandler } from "../common/errorHandler";
 import { User } from "../db/models";
 import { IError, SERVICE_ERRORS } from "../types/errors";
-import { errorHandler } from "../common/errorHandler";
 
 const authMiddleware = async (req, res, next) => {
     try {
@@ -16,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
             throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
         }
 
-        req.user = user;
+        req.body.user = user;
         next();
     } catch (e) {
         const err: IError = errorHandler(e);

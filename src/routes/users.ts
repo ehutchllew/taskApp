@@ -22,6 +22,9 @@ export function userRoutes(app: Application) {
 
     app.get("/users", authMiddleware, async (req, res) => {
         try {
+            if (req.body.user) {
+                res.send(req.body.user);
+            }
             const users = await User.find({});
             res.send(users);
         } catch (e) {
