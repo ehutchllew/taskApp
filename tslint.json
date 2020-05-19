@@ -15,6 +15,7 @@
         "no-empty-interface": false,
         "no-object-literal-type-assertion": false,
         "no-unused-expression": [true, "allow-fast-null-checks"],
+        "only-arrow-functions": false,
         "ordered-imports": [
             true,
             {

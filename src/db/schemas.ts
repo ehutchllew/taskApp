@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
-import { Document, Schema, Error } from "mongoose";
+import { Document, Error, Schema } from "mongoose";
 import validator from "validator";
 import { IUserField } from "../collections";
-import { User } from "./models";
 import { SERVICE_ERRORS } from "../types/errors";
+import { User } from "./models";
 
 export type IUserDocument = Document & IUserField;
 

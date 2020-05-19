@@ -65,7 +65,7 @@ export function userRoutes(app: Application) {
 
     app.post("/users/login", async (req, res) => {
         try {
-            //@ts-ignore
+            // @ts-ignore
             const user = await User.findByCredentials(
                 req.body.email,
                 req.body.password
