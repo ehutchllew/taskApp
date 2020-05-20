@@ -5,7 +5,12 @@ import { IError, SERVICE_ERRORS } from "../types/errors";
 
 const authMiddleware = async (req, res, next) => {
     try {
-        const token = req.header("Authorization").replace("Bearer ", "");
+        const token = req.header("Authorization")?.replace("Bearer ", "");
+
+        if (!token) {
+            throw { name: SERVICE_ERRORS.INVALID_TOKEN };
+        }
+
         const decoded = jwt.verify(token, "somesecretlel");
         const user = await User.findOne({
             _id: decoded.id,
@@ -15,7 +20,7 @@ const authMiddleware = async (req, res, next) => {
         if (!user) {
             throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
         }
-
+        req.body.token = token;
         req.body.user = user;
         next();
     } catch (e) {

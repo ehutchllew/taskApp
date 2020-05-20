@@ -84,6 +84,26 @@ export function userRoutes(app: Application) {
         }
     });
 
+    app.post("/users/logout", authMiddleware, async (req, res) => {
+        try {
+            // const { token, user } = req.body;
+            // const filteredUserTokens = user.tokens.filter((t) => t !== token);
+            // const updatedUser = { ...user, tokens: filteredUserTokens };
+
+            // await updatedUser.save();
+            // res.send(updatedUser);
+            req.body.user.tokens = req.body.user.tokens.filter(
+                (t) => t.token !== req.body.token
+            );
+
+            await req.body.user.save();
+            res.send(req.body.user);
+        } catch (e) {
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
+    });
+
     app.post("/users", async (req, res) => {
         try {
             const user = new User(req.body);
