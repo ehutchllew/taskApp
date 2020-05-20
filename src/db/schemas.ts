@@ -2,10 +2,11 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Document, Error, Schema } from "mongoose";
 import validator from "validator";
-import { IUserField } from "../collections";
+import { ITaskField, IUserField } from "../collections";
 import { SERVICE_ERRORS } from "../types/errors";
 import { User } from "./models";
 
+export type ITaskDocument = Document & ITaskField;
 export type IUserDocument = Document & IUserField;
 
 const TaskSchema = new Schema({
@@ -17,6 +18,11 @@ const TaskSchema = new Schema({
         required: true,
         trim: true,
         type: String,
+    },
+    owner: {
+        ref: "user",
+        required: true,
+        type: Schema.Types.ObjectId,
     },
 });
 
@@ -70,6 +76,12 @@ const UserSchema = new Schema({
     ],
 });
 
+UserSchema.virtual("tasks", {
+    localField: "_id",
+    foreignField: "owner",
+    ref: "task",
+});
+
 UserSchema.methods.generateAuthToken = async function () {
     const user = this;
     const token = jwt.sign({ id: user._id.toString() }, "somesecretlel");
@@ -79,6 +91,21 @@ UserSchema.methods.generateAuthToken = async function () {
     await user.save();
 
     return token;
+};
+
+/**
+ * `toJSON` is a side-effect that gets called when JSON.stringify is
+ * invoked. Express is calling JSON.stringify for us when we
+ * send back responses. This feature is not unique to mongoose.
+ */
+UserSchema.methods.toJSON = function () {
+    const user = this;
+    const userClone = user.toObject();
+
+    delete userClone.password;
+    delete userClone.tokens;
+
+    return userClone;
 };
 
 UserSchema.statics.findByCredentials = async function (email, password) {

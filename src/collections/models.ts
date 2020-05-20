@@ -7,6 +7,7 @@ interface IBaseField {
 export interface ITaskField extends IBaseField {
     complete: boolean;
     description: string;
+    owner: ObjectId;
 }
 export interface IUserField extends IBaseField {
     age: number;

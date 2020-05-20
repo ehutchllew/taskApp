@@ -33,7 +33,7 @@ export function userRoutes(app: Application) {
         }
     });
 
-    app.get("/users/:id", async (req, res) => {
+    app.get("/users/:id", authMiddleware, async (req, res) => {
         try {
             const user = await User.findById(req.params.id);
             if (!user) {
@@ -46,7 +46,7 @@ export function userRoutes(app: Application) {
         }
     });
 
-    app.patch("/users/:id", async (req, res) => {
+    app.patch("/users/:id", authMiddleware, async (req, res) => {
         try {
             const user = await User.findById(req.params.id);
 
@@ -86,18 +86,30 @@ export function userRoutes(app: Application) {
 
     app.post("/users/logout", authMiddleware, async (req, res) => {
         try {
-            // const { token, user } = req.body;
-            // const filteredUserTokens = user.tokens.filter((t) => t !== token);
-            // const updatedUser = { ...user, tokens: filteredUserTokens };
-
-            // await updatedUser.save();
-            // res.send(updatedUser);
-            req.body.user.tokens = req.body.user.tokens.filter(
-                (t) => t.token !== req.body.token
+            const { token, user } = req.body;
+            const filteredUserTokens = user.tokens.filter(
+                (t) => t.token !== token
             );
+            const updatedUser = Object.assign(user, {
+                tokens: filteredUserTokens,
+            });
+            await updatedUser.save();
+            res.send(updatedUser);
+        } catch (e) {
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
+    });
 
-            await req.body.user.save();
-            res.send(req.body.user);
+    app.post("/users/logoutAll", authMiddleware, async (req, res) => {
+        try {
+            const { user } = req.body;
+            const updatedUser = Object.assign(user, {
+                tokens: [],
+            });
+
+            await updatedUser.save();
+            res.send(updatedUser);
         } catch (e) {
             const err: IError = errorHandler(e);
             res.status(err.status).send(err);

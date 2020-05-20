@@ -77,6 +77,7 @@ db.collection(CollectionTypes.USERS)
 ### Creating Models
 
 ```ts
+export type IUserDocument = Document & IUserField;
 const UserSchema = new Schema({
     age: {
         type: Number,
@@ -86,5 +87,57 @@ const UserSchema = new Schema({
     },
 });
 
-const User = model("User", UserSchema);
+const User = model<IUserDocument>("User", UserSchema);
+```
+
+### Creating Relational Documents/Tables
+
+```ts
+const TaskSchema = new Schema({
+    ...otherData,
+    owner: {
+        ref: "User", // name of model to relate to, see: `Creating Models`.
+        required: true,
+        type: Schema.Types.ObjectId,
+    },
+});
+```
+
+Then when setting the data make sure to set the `owner` prop like so:
+
+```ts
+/*
+ * req.body.user is being set in the `authMiddleware` -- we're
+ * actively setting it when the token is authorized so we can use
+ * this object -- so this gets passed in as part of the body.
+ */
+const task = new Task({ ...req.body, owner: req.body.user._id });
+```
+
+If we want to use the `owner` id on a Task to grab the actual relational
+object then we need to use `populate` and `execPopulate` like such:
+
+```ts
+const task = await Task.findById("5ec59a8c0e1a450af44ac692");
+await task.populate("owner").execPopulate();
+console.log(task.owner); // task.owner contains the entire User object
+```
+
+### Creating Virtual Properties
+
+```ts
+UserSchema.virtual("tasks", {
+    localField: "_id", // The local prop that is equal to the foreign prop.
+    foreignField: "owner", // Field on relational data that creates the relation, see: `Creating Relational Documents/Tables`
+    ref: "Task", // name of model to relate to, see: `Creating Models`.
+});
+```
+
+Like with populating the `task.owner` prop we can grab all associated tasks
+to the user by:
+
+```ts
+const user = await User.findById("5ec599d030e9ca40acd58c6b");
+await user.populate("tasks").execPopulate();
+console.log(user.tasks); // shows all tasks who's owner prop === user._id prop
 ```

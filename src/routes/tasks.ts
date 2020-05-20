@@ -1,10 +1,11 @@
 import { Application } from "express";
 import { errorHandler } from "../common/errorHandler";
 import { Task } from "../db/models";
+import { authMiddleware } from "../middleware";
 import { IError, SERVICE_ERRORS } from "../types/errors";
 
 export function taskRoutes(app: Application) {
-    app.delete("/tasks/:id", async (req, res) => {
+    app.delete("/tasks/:id", authMiddleware, async (req, res) => {
         try {
             const task = await Task.findByIdAndDelete(req.params.id);
 
@@ -19,7 +20,7 @@ export function taskRoutes(app: Application) {
         }
     });
 
-    app.get("/tasks", async (req, res) => {
+    app.get("/tasks", authMiddleware, async (req, res) => {
         try {
             const tasks = await Task.find({});
             res.send(tasks);
@@ -29,7 +30,7 @@ export function taskRoutes(app: Application) {
         }
     });
 
-    app.get("/tasks/:id", async (req, res) => {
+    app.get("/tasks/:id", authMiddleware, async (req, res) => {
         try {
             const task = await Task.findById(req.params.id);
 
@@ -44,7 +45,7 @@ export function taskRoutes(app: Application) {
         }
     });
 
-    app.patch("/tasks/:id", async (req, res) => {
+    app.patch("/tasks/:id", authMiddleware, async (req, res) => {
         try {
             const task = await Task.findById(req.params.id);
 
@@ -65,9 +66,9 @@ export function taskRoutes(app: Application) {
         }
     });
 
-    app.post("/tasks", async (req, res) => {
+    app.post("/tasks", authMiddleware, async (req, res) => {
         try {
-            const task = new Task(req.body);
+            const task = new Task({ ...req.body, owner: req.body.user._id });
             await task.save();
             res.status(201).send(task);
         } catch (e) {
