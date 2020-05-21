@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import { errorHandler } from "../common/errorHandler";
-import { User } from "../db/models";
-import { IError, SERVICE_ERRORS } from "../types/errors";
+import { IError } from "../types/errors";
 import { ROLE } from "../types/role";
 
 const userGetMiddleware = async (

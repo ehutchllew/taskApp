@@ -16,5 +16,6 @@ export interface IUserField extends IBaseField {
     name: string;
     password: string;
     role: ROLE;
+    tasks?: ITaskField[];
     tokens: Array<{ _id: ObjectId; token: string }>;
 }
