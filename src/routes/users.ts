@@ -1,7 +1,7 @@
 import { Application } from "express";
 import { errorHandler } from "../common/errorHandler";
 import { User } from "../db/models";
-import { authMiddleware } from "../middleware";
+import { authMiddleware, userGetMiddleware } from "../middleware";
 import { IError, SERVICE_ERRORS } from "../types/errors";
 
 export function userRoutes(app: Application) {
@@ -20,11 +20,8 @@ export function userRoutes(app: Application) {
         }
     });
 
-    app.get("/users", authMiddleware, async (req, res) => {
+    app.get("/users", authMiddleware, userGetMiddleware, async (req, res) => {
         try {
-            if (req.user) {
-                return res.send(req.user);
-            }
             const users = await User.find({});
             res.send(users);
         } catch (e) {
@@ -33,18 +30,23 @@ export function userRoutes(app: Application) {
         }
     });
 
-    app.get("/users/:id", authMiddleware, async (req, res) => {
-        try {
-            const user = await User.findById(req.params.id);
-            if (!user) {
-                throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
+    app.get(
+        "/users/:id",
+        authMiddleware,
+        userGetMiddleware,
+        async (req, res) => {
+            try {
+                const user = await User.findById(req.params.id);
+                if (!user) {
+                    throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
+                }
+                res.send(user);
+            } catch (e) {
+                const err: IError = errorHandler(e);
+                res.status(err.status).send(err);
             }
-            res.send(user);
-        } catch (e) {
-            const err: IError = errorHandler(e);
-            res.status(err.status).send(err);
         }
-    });
+    );
 
     app.patch("/users/:id", authMiddleware, async (req, res) => {
         try {
@@ -93,6 +95,7 @@ export function userRoutes(app: Application) {
             const updatedUser = Object.assign(user, {
                 tokens: filteredUserTokens,
             });
+
             await updatedUser.save();
             res.send(updatedUser);
         } catch (e) {

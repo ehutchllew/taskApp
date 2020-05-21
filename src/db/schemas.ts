@@ -4,6 +4,7 @@ import { Document, Error, Schema } from "mongoose";
 import validator from "validator";
 import { ITaskField, IUserField } from "../collections";
 import { SERVICE_ERRORS } from "../types/errors";
+import { ROLE } from "../types/role";
 import { User } from "./models";
 
 export type ITaskDocument = Document & ITaskField;
@@ -66,6 +67,10 @@ const UserSchema = new Schema({
             return true;
         },
     },
+    role: {
+        default: ROLE.USER,
+        type: String,
+    },
     tokens: [
         {
             token: {
@@ -103,8 +108,8 @@ UserSchema.methods.toJSON = function () {
     const user = this;
     const userClone = user.toObject();
 
-    delete userClone.admin;
     delete userClone.password;
+    delete userClone.role;
     delete userClone.tokens;
 
     return userClone;
