@@ -22,8 +22,8 @@ export function userRoutes(app: Application) {
 
     app.get("/users", authMiddleware, async (req, res) => {
         try {
-            if (req.body.user) {
-                return res.send(req.body.user);
+            if (req.user) {
+                return res.send(req.user);
             }
             const users = await User.find({});
             res.send(users);
@@ -86,7 +86,7 @@ export function userRoutes(app: Application) {
 
     app.post("/users/logout", authMiddleware, async (req, res) => {
         try {
-            const { token, user } = req.body;
+            const { token, user } = req;
             const filteredUserTokens = user.tokens.filter(
                 (t) => t.token !== token
             );
@@ -103,7 +103,7 @@ export function userRoutes(app: Application) {
 
     app.post("/users/logoutAll", authMiddleware, async (req, res) => {
         try {
-            const { user } = req.body;
+            const { user } = req;
             const updatedUser = Object.assign(user, {
                 tokens: [],
             });

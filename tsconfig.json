@@ -5,7 +5,8 @@
         "moduleResolution": "node",
         "outDir": "src/dist",
         "sourceMap": true,
-        "target": "es2017"
+        "target": "es2017",
+        "typeRoots": ["@types", "node_modules/@types"]
     },
     "lib": ["es2015"],
     "exclude": ["node_modules"]

@@ -1,9 +1,14 @@
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { errorHandler } from "../common/errorHandler";
 import { User } from "../db/models";
 import { IError, SERVICE_ERRORS } from "../types/errors";
 
-const authMiddleware = async (req, res, next) => {
+const authMiddleware = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const token = req.header("Authorization")?.replace("Bearer ", "");
 
@@ -20,8 +25,8 @@ const authMiddleware = async (req, res, next) => {
         if (!user) {
             throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
         }
-        req.body.token = token;
-        req.body.user = user;
+        req.token = token;
+        req.user = user;
         next();
     } catch (e) {
         const err: IError = errorHandler(e);
