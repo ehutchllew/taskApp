@@ -5,7 +5,7 @@ import validator from "validator";
 import { ITaskField, IUserField } from "../collections";
 import { SERVICE_ERRORS } from "../types/errors";
 import { ROLE } from "../types/role";
-import { User } from "./models";
+import { Task, User } from "./models";
 
 export type ITaskDocument = Document & ITaskField;
 export type IUserDocument = Document & IUserField;
@@ -135,6 +135,14 @@ UserSchema.pre<IUserDocument>("save", async function (next) {
     if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 8);
     }
+    next();
+});
+
+UserSchema.pre<IUserDocument>("remove", async function (next) {
+    const user = this;
+    await Task.deleteMany({
+        owner: user._id,
+    });
     next();
 });
 

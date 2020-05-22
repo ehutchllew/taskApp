@@ -7,12 +7,13 @@ import { IError, SERVICE_ERRORS } from "../types/errors";
 export function userRoutes(app: Application) {
     app.delete("/users/:id", authMiddleware, async (req, res) => {
         try {
-            const user = await User.findByIdAndDelete(req.params.id);
+            const user = req.user;
 
             if (!user) {
                 throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
             }
 
+            await user.remove();
             res.send(user);
         } catch (e) {
             const err: IError = errorHandler(e);
