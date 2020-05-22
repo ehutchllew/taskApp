@@ -3,6 +3,7 @@ import { errorHandler } from "../common/errorHandler";
 import { Task } from "../db/models";
 import { authMiddleware } from "../middleware";
 import { IError, SERVICE_ERRORS } from "../types/errors";
+import { ITaskField } from "../collections";
 
 export function taskRoutes(app: Application) {
     app.delete("/tasks/:id", authMiddleware, async (req, res) => {
@@ -21,8 +22,22 @@ export function taskRoutes(app: Application) {
     });
 
     app.get("/tasks", authMiddleware, async (req, res) => {
+        const match: Partial<ITaskField> = {};
+        if (req.query.completed) {
+            match.completed = req.query.completed === "true";
+        }
+        console.log(req.query.description);
+        if (req.query.description) {
+            match.description = req.query.description as string;
+        }
+
         try {
-            const user = await req.user.populate("tasks").execPopulate();
+            const user = await req.user
+                .populate({
+                    match,
+                    path: "tasks",
+                })
+                .execPopulate();
             res.send(user.tasks);
         } catch (e) {
             const err: IError = errorHandler(e);

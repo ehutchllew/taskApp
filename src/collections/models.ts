@@ -6,7 +6,7 @@ interface IBaseField {
 }
 
 export interface ITaskField extends IBaseField {
-    complete: boolean;
+    completed: boolean;
     description: string;
     owner: ObjectId;
 }
