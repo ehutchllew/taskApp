@@ -11,7 +11,7 @@
         "lint-fix": "tslint --project . --fix",
         "tsc": "tsc --noEmit --skipLibCheck",
         "tsn": "yarn ts-node",
-        "watch": "nodemon -e ts,hbs -x yarn tsn"
+        "watch": "nodemon -e ts -x yarn tsn src/index.ts"
     },
     "dependencies": {
         "bcryptjs": "^2.4.3",
