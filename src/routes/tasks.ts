@@ -31,6 +31,12 @@ export function taskRoutes(app: Application) {
             match.description = req.query.description as string;
         }
 
+        const sort: Partial<ITaskField> = {};
+        if (req.query.sortBy) {
+            const [field, order] = (req.query.sortBy as string).split(":");
+            sort[field] = order === "desc" ? -1 : 1;
+        }
+
         try {
             const user = await req.user
                 .populate({
@@ -38,6 +44,7 @@ export function taskRoutes(app: Application) {
                     options: {
                         limit: parseInt(req.query.limit as string),
                         skip: parseInt(req.query.skip as string),
+                        sort,
                     },
                     path: "tasks",
                 })
