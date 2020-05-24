@@ -1,9 +1,9 @@
 import { Application, Request } from "express";
+import { ITaskField } from "../collections";
 import { errorHandler } from "../common/errorHandler";
 import { Task } from "../db/models";
 import { authMiddleware } from "../middleware";
 import { IError, SERVICE_ERRORS } from "../types/errors";
-import { ITaskField } from "../collections";
 
 export function taskRoutes(app: Application) {
     app.delete("/tasks/:id", authMiddleware, async (req, res) => {
@@ -26,7 +26,7 @@ export function taskRoutes(app: Application) {
         if (req.query.completed) {
             match.completed = req.query.completed === "true";
         }
-        console.log(req.query.description);
+
         if (req.query.description) {
             match.description = req.query.description as string;
         }
@@ -35,6 +35,10 @@ export function taskRoutes(app: Application) {
             const user = await req.user
                 .populate({
                     match,
+                    options: {
+                        limit: parseInt(req.query.limit as string),
+                        skip: parseInt(req.query.skip as string),
+                    },
                     path: "tasks",
                 })
                 .execPopulate();
