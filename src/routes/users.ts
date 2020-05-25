@@ -1,12 +1,12 @@
 import { Application } from "express";
 import multer from "multer";
+import { adaptMulterError } from "../common/adaptMulterError";
 import { errorHandler } from "../common/errorHandler";
+import { parseFileType } from "../common/parseFileType";
 import { User } from "../db/models";
 import { authMiddleware, userGetMiddleware } from "../middleware";
 import { IError, SERVICE_ERRORS } from "../types/errors";
-import { parseFileType } from "../common/parseFileType";
 import { acceptedFileTypes } from "../types/uploadFileTypes";
-import { adaptMulterError } from "../common/adaptMulterError";
 
 export function userRoutes(app: Application) {
     app.delete("/users/:id", authMiddleware, async (req, res) => {
