@@ -1,4 +1,5 @@
 import { Application } from "express";
+import multer from "multer";
 import { errorHandler } from "../common/errorHandler";
 import { User } from "../db/models";
 import { authMiddleware, userGetMiddleware } from "../middleware";
@@ -68,6 +69,13 @@ export function userRoutes(app: Application) {
             const err: IError = errorHandler(e);
             res.status(err.status).send(err);
         }
+    });
+
+    const uploader = multer({
+        dest: "avatars",
+    });
+    app.post("/users/avatar", uploader.single("avatar"), (req, res) => {
+        res.send();
     });
 
     app.post("/users/login", async (req, res) => {
