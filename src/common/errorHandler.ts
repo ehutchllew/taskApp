@@ -21,8 +21,14 @@ export function errorHandler(err: Error): IError {
         case SERVICE_ERRORS.INVALID_TOKEN:
             errorMap.status = 401;
             break;
+        case SERVICE_ERRORS.LIMIT_FILE_SIZE:
+            errorMap.status = 422;
+            break;
         case SERVICE_ERRORS.PARALLEL_SAVE:
             errorMap.status = 409;
+            break;
+        case SERVICE_ERRORS.UNSUPPORTED_FILETYPE:
+            errorMap.status = 415;
             break;
         default:
             errorMap.status = 500;

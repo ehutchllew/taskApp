@@ -4,6 +4,9 @@ import { errorHandler } from "../common/errorHandler";
 import { User } from "../db/models";
 import { authMiddleware, userGetMiddleware } from "../middleware";
 import { IError, SERVICE_ERRORS } from "../types/errors";
+import { parseFileType } from "../common/parseFileType";
+import { acceptedFileTypes } from "../types/uploadFileTypes";
+import { adaptMulterError } from "../common/adaptMulterError";
 
 export function userRoutes(app: Application) {
     app.delete("/users/:id", authMiddleware, async (req, res) => {
@@ -71,11 +74,18 @@ export function userRoutes(app: Application) {
         }
     });
 
-    const uploader = multer({
-        dest: "avatars",
-    });
-    app.post("/users/avatar", uploader.single("avatar"), (req, res) => {
-        res.send();
+    app.post("/users/avatar", helpers.uploaderMiddleware, (req, res) => {
+        try {
+            res.sendStatus(204);
+        } catch (e) {
+            /**
+             * I don't think we even need this catch block as
+             * our error handling for multer is occurring in the
+             * custom middleware (see below).
+             */
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
     });
 
     app.post("/users/login", async (req, res) => {
@@ -141,3 +151,59 @@ export function userRoutes(app: Application) {
         }
     });
 }
+
+const helpers = {
+    /**
+     * Multer Uploader Ref
+     */
+    uploader: multer({
+        dest: "avatars",
+        fileFilter(req, file, cb) {
+            const fileExtension: string = parseFileType(file.originalname);
+            if (acceptedFileTypes.indexOf(fileExtension) < 0) {
+                return cb({
+                    name: SERVICE_ERRORS.UNSUPPORTED_FILETYPE,
+                    message: `Supported file types are: ${acceptedFileTypes}`,
+                });
+            }
+
+            cb(undefined, true);
+        },
+        limits: {
+            fileSize: 1000000,
+        },
+    }).single("avatar"),
+
+    /**
+     * Error Handler for Above Mentioned Multer Uploader Ref
+     * @param res express res
+     * @param next express next
+     * @param err multer error
+     */
+    uploaderErrorHandler(res, next, err) {
+        if (err) {
+            let error;
+            if (err instanceof multer.MulterError) {
+                error = errorHandler(adaptMulterError(err));
+            }
+            error = errorHandler(err);
+            res.status(error.status).send(error);
+        } else {
+            next();
+        }
+    },
+
+    /**
+     * Milddeware Wrapper to capture errors ourselves
+     * @param req express req
+     * @param res express res
+     * @param next express next
+     */
+    uploaderMiddleware(req, res, next) {
+        helpers.uploader(
+            req,
+            res,
+            helpers.uploaderErrorHandler.bind(null, res, next)
+        );
+    },
+};
