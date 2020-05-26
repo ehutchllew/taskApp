@@ -1,4 +1,4 @@
-import { Application } from "express";
+import { Application, Request, Response } from "express";
 import multer from "multer";
 import { adaptMulterError } from "../common/adaptMulterError";
 import { errorHandler } from "../common/errorHandler";
@@ -18,6 +18,23 @@ export function userRoutes(app: Application) {
             }
 
             await user.remove();
+            res.send(user);
+        } catch (e) {
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
+    });
+
+    app.delete("/users/avatar/:id", authMiddleware, async (req, res) => {
+        try {
+            const user = req.user;
+
+            if (!user) {
+                throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
+            }
+
+            user.avatar = undefined;
+            await req.user.save();
             res.send(user);
         } catch (e) {
             const err: IError = errorHandler(e);
@@ -74,19 +91,26 @@ export function userRoutes(app: Application) {
         }
     });
 
-    app.post("/users/avatar", helpers.uploaderMiddleware, (req, res) => {
-        try {
-            res.sendStatus(204);
-        } catch (e) {
-            /**
-             * I don't think we even need this catch block as
-             * our error handling for multer is occurring in the
-             * custom middleware (see below).
-             */
-            const err: IError = errorHandler(e);
-            res.status(err.status).send(err);
+    app.post(
+        "/users/avatar",
+        authMiddleware,
+        helpers.uploaderMiddleware,
+        async (req, res) => {
+            try {
+                req.user.avatar = req.file.buffer;
+                await req.user.save();
+                res.sendStatus(204);
+            } catch (e) {
+                /**
+                 * I don't think we even need this catch block as
+                 * our error handling for multer is occurring in the
+                 * custom middleware (see below).
+                 */
+                const err: IError = errorHandler(e);
+                res.status(err.status).send(err);
+            }
         }
-    });
+    );
 
     app.post("/users/login", async (req, res) => {
         try {
@@ -157,7 +181,6 @@ const helpers = {
      * Multer Uploader Ref
      */
     uploader: multer({
-        dest: "avatars",
         fileFilter(req, file, cb) {
             const fileExtension: string = parseFileType(file.originalname);
             if (acceptedFileTypes.indexOf(fileExtension) < 0) {

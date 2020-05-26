@@ -43,6 +43,9 @@ const UserSchema = new Schema(
                 return true;
             },
         },
+        avatar: {
+            type: Buffer,
+        },
         email: {
             lowercase: true,
             required: true,

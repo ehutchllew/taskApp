@@ -12,6 +12,7 @@ export interface ITaskField extends IBaseField {
 }
 export interface IUserField extends IBaseField {
     age: number;
+    avatar: Buffer;
     email: string;
     name: string;
     password: string;
