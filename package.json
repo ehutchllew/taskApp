@@ -6,7 +6,7 @@
     "author": "Evan <ehutch7@gmail.com>",
     "license": "MIT",
     "scripts": {
-        "build": "yarn tsc",
+        "build": "node_modules/.bin/tsc",
         "lint": "tslint --project .",
         "lint-fix": "tslint --project . --fix",
         "tsc": "tsc --noEmit --skipLibCheck",

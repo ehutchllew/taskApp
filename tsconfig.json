@@ -3,7 +3,7 @@
         "esModuleInterop": true,
         "module": "commonjs",
         "moduleResolution": "node",
-        "outDir": "src/dist",
+        "outDir": "dist",
         "sourceMap": true,
         "target": "es2017",
         "typeRoots": ["@types", "node_modules/@types"]
