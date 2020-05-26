@@ -9,6 +9,7 @@
         "build": "node_modules/.bin/tsc",
         "lint": "tslint --project .",
         "lint-fix": "tslint --project . --fix",
+        "start": "node dist/src/index.js",
         "tsc": "tsc --noEmit --skipLibCheck",
         "tsn": "yarn ts-node",
         "watch": "nodemon -e ts -x yarn tsn -r dotenv/config src/index.ts dotenv_config_path=config/dev.env"
