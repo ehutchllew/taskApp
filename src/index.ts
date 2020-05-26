@@ -3,7 +3,7 @@ import "./db/mongoose";
 import { configureRoutes } from "./routes";
 
 const app: Application = express();
-const PORT = process.env.port || 3001;
+const PORT = process.env.port;
 
 app.use(express.json());
 

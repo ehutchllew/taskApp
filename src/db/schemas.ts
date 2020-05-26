@@ -103,7 +103,10 @@ UserSchema.virtual("tasks", {
 UserSchema.methods.generateAuthToken = async function () {
     const user = this;
 
-    const token = jwt.sign({ id: user._id.toString() }, "somesecretlel");
+    const token = jwt.sign(
+        { id: user._id.toString() },
+        process.env.JWT_SECRET_KEY
+    );
 
     user.tokens = [...user.tokens, { token }];
 
@@ -121,6 +124,7 @@ UserSchema.methods.toJSON = function () {
     const user = this;
     const userClone = user.toObject();
 
+    delete userClone.avatar;
     delete userClone.password;
     delete userClone.role;
     delete userClone.tokens;

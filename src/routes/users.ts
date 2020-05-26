@@ -1,5 +1,6 @@
 import { Application, Request, Response } from "express";
 import multer from "multer";
+import sharp from "sharp";
 import { adaptMulterError } from "../common/adaptMulterError";
 import { errorHandler } from "../common/errorHandler";
 import { parseFileType } from "../common/parseFileType";
@@ -78,7 +79,7 @@ export function userRoutes(app: Application) {
                 throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
             }
 
-            res.set("Content-Type", "image/jpg").send(user.avatar);
+            res.set("Content-Type", "image/png").send(user.avatar);
         } catch (e) {
             const err: IError = errorHandler(e);
             res.status(err.status).send(err);
@@ -112,7 +113,14 @@ export function userRoutes(app: Application) {
         helpers.uploaderMiddleware,
         async (req, res) => {
             try {
-                req.user.avatar = req.file.buffer;
+                const buffer = await sharp(req.file.buffer)
+                    .resize({
+                        height: 250,
+                        width: 250,
+                    })
+                    .png()
+                    .toBuffer();
+                req.user.avatar = buffer;
                 await req.user.save();
                 res.sendStatus(204);
             } catch (e) {
