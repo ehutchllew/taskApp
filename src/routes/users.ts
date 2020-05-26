@@ -25,7 +25,7 @@ export function userRoutes(app: Application) {
         }
     });
 
-    app.delete("/users/avatar/:id", authMiddleware, async (req, res) => {
+    app.delete("/users/:id/avatar", authMiddleware, async (req, res) => {
         try {
             const user = req.user;
 
@@ -69,6 +69,21 @@ export function userRoutes(app: Application) {
             }
         }
     );
+
+    app.get("/users/:id/avatar", async (req, res) => {
+        try {
+            const user = await User.findById(req.params.id);
+
+            if (!user || !user.avatar) {
+                throw { name: SERVICE_ERRORS.DOCUMENT_NOT_FOUND };
+            }
+
+            res.set("Content-Type", "image/jpg").send(user.avatar);
+        } catch (e) {
+            const err: IError = errorHandler(e);
+            res.status(err.status).send(err);
+        }
+    });
 
     app.patch("/users/:id", authMiddleware, async (req, res) => {
         try {
