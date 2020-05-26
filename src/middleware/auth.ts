@@ -15,8 +15,7 @@ const authMiddleware = async (
         if (!token) {
             throw { name: SERVICE_ERRORS.INVALID_TOKEN };
         }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRETY_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         const user = await User.findOne({
             _id: decoded.id,
             "tokens.token": token,
