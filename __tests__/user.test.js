@@ -32,7 +32,7 @@ describe("users test suite", () => {
             tokens: [
                 {
                     token: jwt.sign(
-                        { _id: correctUserId },
+                        { id: correctUserId },
                         process.env.JWT_SECRET_KEY
                     ),
                 },
@@ -75,6 +75,26 @@ describe("users test suite", () => {
                     password: "Testt1234!",
                 })
                 .expect(401);
+        });
+
+        it("should get the current user's profile", async () => {
+            await request(app)
+                .get("/users")
+                .set("Authorization", `Bearer ${correctUser.tokens[0].token}`)
+                .send()
+                .expect(200);
+        });
+
+        it("should not allow getting an account if there is no valid token", async () => {
+            await request(app).get("/users").send().expect(401);
+        });
+
+        it("should allow the user to delete themselves if a valid token exists.", async () => {
+            await request(app)
+                .delete("/users/" + correctUserId)
+                .set("Authorization", `Bearer ${correctUser.tokens[0].token}`)
+                .send()
+                .expect(200);
         });
     });
 });
