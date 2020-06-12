@@ -11,7 +11,7 @@ describe("users test suite", () => {
         });
 
         it("should signup a new user", async () => {
-            await request(app)
+            const response = await request(app)
                 .post("/users")
                 .send({
                     name: "Joe Shmoe",
@@ -19,6 +19,33 @@ describe("users test suite", () => {
                     password: "Test1234!",
                 })
                 .expect(201);
+            const user = await User.findById(response.body.user._id);
+            expect(user).toBeTruthy();
+
+            expect(response.body).toMatchObject({
+                user: {
+                    name: "Joe Shmoe", // or user.name?,
+                    email: "joeylackatoey@email.com",
+                },
+                token: user.tokens[0].token,
+            });
+
+            expect;
+        });
+
+        it("should not store the plaintext password", async () => {
+            const response = await request(app)
+                .post("/users")
+                .send({
+                    name: "Joe Shmoe",
+                    email: "joeylackatoey@email.com",
+                    password: "Test1234!",
+                })
+                .expect(201);
+
+            const user = await User.findById(response.body.user._id);
+
+            expect(user.password).not.toBe("Test1234!");
         });
     });
 
@@ -58,13 +85,17 @@ describe("users test suite", () => {
         });
 
         it("should login existing user", async () => {
-            await request(app)
+            const response = await request(app)
                 .post("/users/login")
                 .send({
                     email: correctUser.email,
                     password: correctUser.password,
                 })
                 .expect(200);
+
+            const user = await User.findById(response.body.user._id);
+
+            expect(user.tokens[1].token).toEqual(response.body.token);
         });
 
         it("should not allow login on incorrect password", async () => {
@@ -90,11 +121,14 @@ describe("users test suite", () => {
         });
 
         it("should allow the user to delete themselves if a valid token exists.", async () => {
-            await request(app)
+            const response = await request(app)
                 .delete("/users/" + correctUserId)
                 .set("Authorization", `Bearer ${correctUser.tokens[0].token}`)
                 .send()
                 .expect(200);
+            const user = await User.findById(response.body._id);
+
+            expect(user).toBeNull();
         });
     });
 });
