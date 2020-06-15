@@ -131,6 +131,21 @@ describe("users test suite", () => {
             await request(app).get("/users").send().expect(401);
         });
 
+        it("should allow the user to update a valid field", async () => {
+            const response = await request(app)
+                .patch("/users/" + correctUserId)
+                .set("Authorization", `Bearer ${correctUser.tokens[0].token}`)
+                .send({
+                    name: "William",
+                })
+                .expect(200);
+
+            const user = await User.findById(response.body._id);
+
+            expect(user.name).toBe("William");
+            expect(user.email).toBe("bep@email.com");
+        });
+
         it("should allow the user to delete themselves if a valid token exists.", async () => {
             const response = await request(app)
                 .delete("/users/" + correctUserId)
