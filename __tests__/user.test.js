@@ -98,6 +98,17 @@ describe("users test suite", () => {
             expect(user.tokens[1].token).toEqual(response.body.token);
         });
 
+        it("should allow the user to upload an avatar image", async () => {
+            await request(app)
+                .post(`/users/avatar`)
+                .set("Authorization", `Bearer ${correctUser.tokens[0].token}`)
+                .attach("avatar", "__tests__/fixtures/passport_photo.jpg")
+                .expect(204);
+
+            const user = await User.findById(correctUserId);
+            expect(user.avatar).toEqual(expect.any(Buffer));
+        });
+
         it("should not allow login on incorrect password", async () => {
             await request(app)
                 .post("/users/login")
