@@ -1,8 +1,12 @@
 const request = require("supertest");
-const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
 const { app } = require("../src/app");
 const { User } = require("../src/db/models");
+const {
+    correctUser,
+    correctUserId,
+    setupDB,
+    tearDownDB,
+} = require("./fixtures/db");
 
 describe("users test suite", () => {
     describe("clean DB for each test", () => {
@@ -29,8 +33,6 @@ describe("users test suite", () => {
                 },
                 token: user.tokens[0].token,
             });
-
-            expect;
         });
 
         it("should not store the plaintext password", async () => {
@@ -50,32 +52,13 @@ describe("users test suite", () => {
     });
 
     describe("persist user for each test", () => {
-        const correctUserId = new mongoose.Types.ObjectId();
-        const correctUser = {
-            _id: correctUserId,
-            name: "Will.I.Am.",
-            email: "bep@email.com",
-            password: "Test1234!",
-            tokens: [
-                {
-                    token: jwt.sign(
-                        { id: correctUserId },
-                        process.env.JWT_SECRET_KEY
-                    ),
-                },
-            ],
-        };
         const invalidPasswordUser = {
             name: "Will.I.Am.",
             email: "bep@email.com",
             password: "Test1",
         };
-        beforeAll(async () => {
-            await new User(correctUser).save();
-        });
-        afterAll(async () => {
-            await User.deleteMany();
-        });
+        beforeAll(setupDB);
+        afterAll(tearDownDB);
 
         it("should fail to create user when password is too short", async () => {
             await request(app)
